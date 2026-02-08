@@ -1,4 +1,7 @@
-use super::types::*;
+use super::types::piece::*;
+use super::types::square::*;
+use super::types::coordinate::*;
+use super::types::color::*;
 
 pub struct Board{
     board: Vec<Vec<Square>>

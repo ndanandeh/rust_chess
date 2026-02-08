@@ -1,5 +1,6 @@
 use super::board::Board;
-use super::types::*;
+use super::types::color::Color;
+
 pub struct Game {
     board: Board,
     turn: Color,
