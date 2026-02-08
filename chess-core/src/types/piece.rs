@@ -1,4 +1,5 @@
 use super::color::Color;
+#[derive(Copy, Clone)]
 pub enum PieceType {
     King,
     Queen,
@@ -21,6 +22,7 @@ impl PieceType {
     }
 }
 
+#[derive(Copy, Clone)]
 pub struct Piece {
     piece_type: PieceType,
     color: Color,

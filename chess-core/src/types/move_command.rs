@@ -1,9 +1,9 @@
-use super::square::*;
+use super::coordinate::*;
 
 pub enum MoveError{
     IllegalMove,
 }
 pub struct MoveCommand {
-    from: Square,
-    to: Square
+    pub from: Square,
+    pub to: Square
 }

@@ -1,4 +1,5 @@
 // Rows on the chess board (1-8)
+#[derive(Copy, Clone)]
 pub enum Rank {
     ONE,
     TWO,
@@ -24,6 +25,12 @@ impl TryFrom<usize> for Rank {
             7 => Ok(Rank::EIGHT),
             _ => Err("Invalid enum value"),
         }
+    }
+}
+
+impl std::fmt::Display for Rank {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{}", (*self as usize) + 1)
     }
 }
 
@@ -53,5 +60,29 @@ impl TryFrom<usize> for File {
             7 => Ok(File::H),
             _ => Err("Invalid enum value"),
         }
+    }
+}
+
+impl std::fmt::Display for File {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{}", self)
+    }
+}
+
+pub struct Square {
+    rank: Rank,
+    file: File,
+}
+
+
+impl Square {
+    pub fn new(rank_i: usize, file_i: usize) -> Self {
+        Square {rank: Rank::try_from(rank_i).unwrap(), file: File::try_from(file_i).unwrap() }
+    }
+}
+
+impl std::fmt::Display for Square {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{}{}", self.rank, self.file)
     }
 }

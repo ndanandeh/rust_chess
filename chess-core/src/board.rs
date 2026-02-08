@@ -1,85 +1,50 @@
 use super::types::piece::*;
-use super::types::square::*;
 use super::types::coordinate::*;
 use super::types::color::*;
+use super::types::move_command::*;
 
 pub struct Board{
-    board: Vec<Vec<Square>>
+    board: [[Option<Piece>; 8]; 8]
 }
 
 impl Board {
     // Initialize a new board with pieces in the correct default spots
     pub fn new() -> Self {
+        let black_pieces = [
+            Some(Piece::new(PieceType::Rook, Color::Black)), Some(Piece::new(PieceType::Knight, Color::Black)), Some(Piece::new(PieceType::Bishop, Color::Black)),
+            Some(Piece::new(PieceType::Queen, Color::Black)), Some(Piece::new(PieceType::King, Color::Black)), 
+            Some(Piece::new(PieceType::Bishop, Color::Black)), Some(Piece::new(PieceType::Knight, Color::Black)), Some(Piece::new(PieceType::Rook, Color::Black))
+        ];
 
-        // Initialize the board vector (all empty - no pieces)
-        let mut board_vec: Vec<Vec<Square>> = Vec::new();
-        for i in 0..8 {
-            board_vec.push(Vec::new());
-            for j in 0..8 {
-                board_vec[i].push(Square::new(i,j));
-            }
-        }
-        let mut board = Board {board: board_vec};
+        let white_pieces = [
+            Some(Piece::new(PieceType::Rook, Color::White)), Some(Piece::new(PieceType::Knight, Color::White)), Some(Piece::new(PieceType::Bishop, Color::White)),
+            Some(Piece::new(PieceType::Queen, Color::White)), Some(Piece::new(PieceType::King, Color::White)), 
+            Some(Piece::new(PieceType::Bishop, Color::White)), Some(Piece::new(PieceType::Knight, Color::White)), Some(Piece::new(PieceType::Rook, Color::White))
+        ];
 
-        // place pieces
-        // Place white pieces
-        board.place_piece(Piece::new(PieceType::Rook, Color::White), Rank::ONE, File::A);
-        board.place_piece(Piece::new(PieceType::Knight, Color::White), Rank::ONE, File::B);
-        board.place_piece(Piece::new(PieceType::Bishop, Color::White), Rank::ONE, File::C);
-        board.place_piece(Piece::new(PieceType::Queen, Color::White), Rank::ONE, File::D);
-        board.place_piece(Piece::new(PieceType::King, Color::White), Rank::ONE, File::E);
-        board.place_piece(Piece::new(PieceType::Bishop, Color::White), Rank::ONE, File::F);
-        board.place_piece(Piece::new(PieceType::Knight, Color::White), Rank::ONE, File::G);
-        board.place_piece(Piece::new(PieceType::Rook, Color::White), Rank::ONE, File::H);
+        let black_pawns = [Some(Piece::new(PieceType::Pawn, Color::Black)); 8];
+        let white_pawns = [Some(Piece::new(PieceType::Pawn, Color::White)); 8];
 
-        board.place_piece(Piece::new(PieceType::Pawn, Color::White), Rank::TWO, File::A);
-        board.place_piece(Piece::new(PieceType::Pawn, Color::White), Rank::TWO, File::B);
-        board.place_piece(Piece::new(PieceType::Pawn, Color::White), Rank::TWO, File::C);
-        board.place_piece(Piece::new(PieceType::Pawn, Color::White), Rank::TWO, File::D);
-        board.place_piece(Piece::new(PieceType::Pawn, Color::White), Rank::TWO, File::E);
-        board.place_piece(Piece::new(PieceType::Pawn, Color::White), Rank::TWO, File::F);
-        board.place_piece(Piece::new(PieceType::Pawn, Color::White), Rank::TWO, File::G);
-        board.place_piece(Piece::new(PieceType::Pawn, Color::White), Rank::TWO, File::H);
+        let pieces_arr = [white_pieces, white_pawns, [None; 8], [None; 8], [None; 8], [None; 8], black_pieces, black_pawns];
 
-
-        // Place black pieces
-        board.place_piece(Piece::new(PieceType::Rook, Color::Black), Rank::EIGHT, File::A);
-        board.place_piece(Piece::new(PieceType::Knight, Color::Black), Rank::EIGHT, File::B);
-        board.place_piece(Piece::new(PieceType::Bishop, Color::Black), Rank::EIGHT, File::C);
-        board.place_piece(Piece::new(PieceType::Queen, Color::Black), Rank::EIGHT, File::D);
-        board.place_piece(Piece::new(PieceType::King, Color::Black), Rank::EIGHT, File::E);
-        board.place_piece(Piece::new(PieceType::Bishop, Color::Black), Rank::EIGHT, File::F);
-        board.place_piece(Piece::new(PieceType::Knight, Color::Black), Rank::EIGHT, File::G);
-        board.place_piece(Piece::new(PieceType::Rook, Color::Black), Rank::EIGHT, File::H);
-
-        board.place_piece(Piece::new(PieceType::Pawn, Color::Black), Rank::SEVEN, File::A);
-        board.place_piece(Piece::new(PieceType::Pawn, Color::Black), Rank::SEVEN, File::B);
-        board.place_piece(Piece::new(PieceType::Pawn, Color::Black), Rank::SEVEN, File::C);
-        board.place_piece(Piece::new(PieceType::Pawn, Color::Black), Rank::SEVEN, File::D);
-        board.place_piece(Piece::new(PieceType::Pawn, Color::Black), Rank::SEVEN, File::E);
-        board.place_piece(Piece::new(PieceType::Pawn, Color::Black), Rank::SEVEN, File::F);
-        board.place_piece(Piece::new(PieceType::Pawn, Color::Black), Rank::SEVEN, File::G);
-        board.place_piece(Piece::new(PieceType::Pawn, Color::Black), Rank::SEVEN, File::H);
-
-        board
+    
+        Board {board: pieces_arr}
     } 
 
-    fn get_square_ref_mut(&mut self, rank: Rank, file: File) -> &mut Square {
-        &mut self.board[rank as usize][file as usize]
-    }
+    fn execute_move(&mut self, move_command: MoveCommand) {
 
-    fn place_piece(&mut self, piece: Piece, rank: Rank, file: File) {
-        let mut square = self.get_square_ref_mut(rank, file);
-        square.place_piece(piece);
     }
 }
 
 impl std::fmt::Display for Board {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         let mut board_str: String = String::new();
-        for r in &self.board {
-            for c in r {
-                board_str += &format!(" {} ", c);
+        for r in self.board.iter().rev() {
+            for op in r {
+                match op {
+                    Some(piece) => { board_str += &format!(" {} ", piece);},
+                    None =>  {board_str += &format!(" __ "); },
+                }
             }
             board_str.push_str("\n")
         }
