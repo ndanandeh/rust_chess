@@ -1,5 +1,16 @@
+pub enum Direction {
+    N,
+    NE,
+    E,
+    SE,
+    S,
+    SW,
+    W,
+    NW
+}
+
 // Rows on the chess board (1-8)
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq, Eq)]
 pub enum Rank {
     ONE,
     TWO,
@@ -28,6 +39,20 @@ impl TryFrom<usize> for Rank {
     }
 }
 
+impl Rank {
+    pub fn north(self) -> Option<Self> {
+        Rank::try_from((self as usize) + 1).ok()
+    }
+
+    pub fn south(self) -> Option<Self> {
+        let i_val = self as usize;
+        if i_val == 0 {
+            return None;
+        }
+        Rank::try_from(i_val -1).ok()
+    }
+}
+
 impl std::fmt::Display for Rank {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(f, "{}", (*self as usize) + 1)
@@ -35,6 +60,7 @@ impl std::fmt::Display for Rank {
 }
 
 // Cols on the chess board (a-h)
+#[derive(Copy, Clone, PartialEq, Eq)]
 pub enum File {
     A,
     B,
@@ -69,20 +95,76 @@ impl std::fmt::Display for File {
     }
 }
 
+impl File {
+    pub fn east(self) -> Option<Self> {
+        File::try_from((self as usize) + 1).ok()
+    }
+
+    pub fn west(self) -> Option<Self> {
+        let i_val = self as usize;
+        if i_val == 0 {
+            return None;
+        }
+        File::try_from(i_val -1).ok()
+    }
+}
+
+#[derive(Copy, Clone, PartialEq, Eq)]
 pub struct Square {
-    rank: Rank,
-    file: File,
+    pub file: File,
+    pub rank: Rank,
 }
 
 
 impl Square {
-    pub fn new(rank_i: usize, file_i: usize) -> Self {
-        Square {rank: Rank::try_from(rank_i).unwrap(), file: File::try_from(file_i).unwrap() }
+    pub fn new(file: File, rank: Rank) -> Self {
+        Square {file, rank}
+    }
+
+    pub fn neighbor(self, direction: Direction) -> Option<Self> {
+        match(direction) {
+            Direction::N => {
+                let rank = self.rank.north()?;
+                Some(Square::new(self.file, rank))
+            },
+            Direction::NE => {
+                let rank = self.rank.north()?;
+                let file = self.file.east()?;
+                Some(Square::new(file, rank))
+            },
+            Direction::E => {
+                let file = self.file.east()?;
+                Some(Square::new(file, self.rank))
+            },
+            Direction::SE => {
+                let rank = self.rank.south()?;
+                let file = self.file.east()?;
+                Some(Square::new(file, rank))
+            },
+            Direction::S => {
+                let rank = self.rank.south()?;
+                Some(Square::new(self.file, rank))
+            },
+            Direction::SW => {
+                let rank = self.rank.south()?;
+                let file = self.file.west()?;
+                Some(Square::new(file, rank))
+            },
+            Direction::W => {
+                let file = self.file.west()?;
+                Some(Square::new(file, self.rank))
+            },
+            Direction::NW => {
+                let rank = self.rank.north()?;
+                let file = self.file.west()?;
+                Some(Square::new(file, rank))
+            },
+        }
     }
 }
 
 impl std::fmt::Display for Square {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{}{}", self.rank, self.file)
+        write!(f, "{}{}", self.file, self.rank)
     }
 }

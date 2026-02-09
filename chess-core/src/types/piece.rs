@@ -36,6 +36,10 @@ impl Piece {
     pub fn get_type(&self) -> &PieceType {
         &self.piece_type
     }
+
+    pub fn get_color(&self) -> Color {
+        self.color
+    }
 }
 
 impl std::fmt::Display for Piece {
