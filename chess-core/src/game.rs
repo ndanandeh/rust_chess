@@ -1,11 +1,11 @@
-use crate::types::coordinate::*;
 use crate::types::move_command::MoveError;
 
 use super::board::Board;
 use super::types::color::Color;
 use super::types::move_command::MoveCommand;
+use super::types::piece::Piece;
 
-use super::movegen::*;
+use super::*;
 
 pub struct Game {
     board: Board,
@@ -20,14 +20,45 @@ impl Game {
         }
     }
 
-    pub fn make_move(&mut self, move_command: MoveCommand) -> Result<(), MoveError> {
-        let valid_moves = generate_valid_moves(move_command.from, &self.board)?;
+    // Fake algebraic notation for now... 
+    pub fn play_move(&mut self, from: &str, to: &str) -> Result<(), MoveError> {
+        self.play_move_internal(MoveCommand::new_alg(from, to)?)
+    }
 
-        if (valid_moves.contains(&move_command.to)) {
-            self.board.move_piece(move_command);
-            Ok(())
-        } else {
-            Err(MoveError::IllegalMove)
+    pub fn play_move_internal(&mut self, move_command: MoveCommand) -> Result<(), MoveError> {
+        // get piece and return error if no piece exists
+        let piece = self.board.get_piece(move_command.from).ok_or(MoveError::NoPiece)?;
+        // return error if the piece we've selected is the wrong color
+        if piece.get_color() != self.turn {
+            return Err(MoveError::WrongColor);
+        }
+        // generate legal moves
+        let legal_moves = movegen::generate_valid_moves(&self.board, self.turn);
+        // if move not in legal moves error
+        if !legal_moves.contains(&move_command) {
+            return Err(MoveError::IllegalMove);
+        }
+        // apply move
+        self.apply_validated_move(move_command, piece);
+
+        // TODO: Consider Updating Game Status + terminating game if necessary
+
+        // switch side
+        self.switch_sides();
+        Ok(())
+    }
+
+    fn apply_validated_move(&mut self, validated_move: MoveCommand, piece: Piece) {
+        // TODO: keep track of enpassant and castle eligibility 
+        self.board.clear_square(validated_move.from);
+        // TODO: consider piece promotion here before setting
+        self.board.set_piece(validated_move.to, piece);
+    }
+
+    fn switch_sides(&mut self) {
+        match self.turn  {
+            Color::White => {self.turn = Color::Black;},
+            Color::Black => {self.turn = Color::White;}
         }
     }
 
@@ -40,6 +71,7 @@ impl Game {
 mod test{
 
     use super::*;
+    use crate::types::coordinate::Square;
 
     // #[test]
     // fn new_game_test() {
@@ -50,8 +82,13 @@ mod test{
     #[test]
     fn move_test() {
         let mut game = Game::new();
-        let move_command = MoveCommand::new(Square::new(File::A, Rank::TWO), Square::new(File::A, Rank::THREE));
-        game.make_move(move_command).unwrap();
+        // game.play_move("h2", "h3").unwrap();
+        move_and_print(&mut game, "e2", "e4");
+        move_and_print(&mut game, "e7", "e5");
+    }
+
+    fn move_and_print(game: &mut Game, from: &str, to: &str) {
+        game.play_move(from, to).unwrap();
         println!("{}", game.board);
     }
 }

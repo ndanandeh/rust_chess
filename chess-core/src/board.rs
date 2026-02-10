@@ -1,9 +1,9 @@
 use super::types::piece::*;
 use super::types::coordinate::*;
 use super::types::color::*;
-use super::types::move_command::*;
 
 pub struct Board{
+    // index as [rank = y coord = 1..8][file = x coord == a..h]
     board: [[Option<Piece>; 8]; 8]
 }
 
@@ -29,28 +29,33 @@ impl Board {
 
     
         Board {board: pieces_arr}
-    } 
-
-    // Executes the provided move command on the board
-    // Does not perform any validation. Validation is expected ot be performed at the game level
-    // If the from square is empty, then something has gone wrong.
-    pub fn move_piece(&mut self, validated_move: MoveCommand) {
-        let piece = self.get_piece(validated_move.from).unwrap();        
-        self.set_piece(validated_move.to, piece);
-        self.clear_square(validated_move.from);
     }
 
     pub fn get_piece(&self, square: Square) -> Option<Piece> {
         self.board[square.rank as usize][square.file as usize]
     }
 
-    fn set_piece(&mut self, square: Square, piece: Piece) {
+    pub fn set_piece(&mut self, square: Square, piece: Piece) {
         self.board[square.rank as usize][square.file as usize] = Some(piece);
     }
 
-    fn clear_square(&mut self, square: Square) {
+    pub fn clear_square(&mut self, square: Square) {
         self.board[square.rank as usize][square.file as usize] = None;
     }
+
+    pub fn is_empty(&self, square: Square) -> bool {
+        self.board[square.rank as usize][square.file as usize].is_none()
+    }
+
+    pub fn is_enemy(&self, square: Square, color: Color) -> bool {
+        match self.get_piece(square) {
+            Some(piece) => {
+                piece.get_color() != color
+            },
+            None => false
+        }
+    }
+
 }
 
 impl std::fmt::Display for Board {
