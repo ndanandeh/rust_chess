@@ -81,14 +81,26 @@ mod test{
 
     #[test]
     fn move_test() {
+        play_scholars_mate();
+    }
+
+    fn play_scholars_mate() {
         let mut game = Game::new();
-        // game.play_move("h2", "h3").unwrap();
         move_and_print(&mut game, "e2", "e4");
         move_and_print(&mut game, "e7", "e5");
+
+        move_and_print(&mut game, "d1", "h5");
+        move_and_print(&mut game, "b8", "c6");
+
+        move_and_print(&mut game, "f1", "c4");
+        move_and_print(&mut game, "g8", "f6");
+
+        move_and_print(&mut game, "h5", "f7");
     }
 
     fn move_and_print(game: &mut Game, from: &str, to: &str) {
         game.play_move(from, to).unwrap();
         println!("{}", game.board);
+        println!("------------------------------------------------------");
     }
 }

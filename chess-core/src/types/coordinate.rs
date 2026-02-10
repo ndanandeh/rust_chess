@@ -1,8 +1,8 @@
-const RANKS: std::ops::Range<i8> = 0..7;
-const FILES: std::ops::Range<i8> = 0..7;
+const RANKS: std::ops::Range<i8> = 0..8;
+const FILES: std::ops::Range<i8> = 0..8;
 
 
-#[derive(Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Square {
     pub rank: i8,
     pub file: i8,

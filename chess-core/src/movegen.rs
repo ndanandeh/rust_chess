@@ -68,9 +68,9 @@ fn bishop_moves(board: &Board, square: Square, piece: Piece) -> HashSet<MoveComm
     let mut moves = HashSet::new();
 
     let directions = [(1,1), (-1,-1), (1,-1), (-1,1)];
-    for direction in directions {
-        let (mut dr,mut df) = direction;
-        while let Some(diagonal) = square.neighbor(dr, df) {
+    for (dr, df) in directions {
+        let (mut r, mut f) = (dr, df);
+        while let Some(diagonal) = square.neighbor(r, f) {
             if !board.is_empty(diagonal) {
                 if board.is_enemy(diagonal, piece.get_color()) {
                     moves.insert(MoveCommand::new(square, diagonal));
@@ -78,8 +78,8 @@ fn bishop_moves(board: &Board, square: Square, piece: Piece) -> HashSet<MoveComm
                 break;
             }
             moves.insert(MoveCommand::new(square, diagonal));
-            dr += 1;
-            df += 1;
+            r += dr;
+            f += df;
         }
     }
 
@@ -104,9 +104,9 @@ fn rook_moves(board: &Board, square: Square, piece: Piece) -> HashSet<MoveComman
     let mut moves = HashSet::new();
 
     let directions = [(1,0), (-1,0), (0,-1), (0,1)];
-    for direction in directions {
-        let (mut dr,mut df) = direction;
-        while let Some(straight) = square.neighbor(dr, df) {
+    for (dr,df) in directions {
+        let (mut r,mut f) = (dr, df);
+        while let Some(straight) = square.neighbor(r, f) {
             if !board.is_empty(straight) {
                 if board.is_enemy(straight, piece.get_color()) {
                     moves.insert(MoveCommand::new(square, straight));
@@ -114,8 +114,8 @@ fn rook_moves(board: &Board, square: Square, piece: Piece) -> HashSet<MoveComman
                 break;
             }
             moves.insert(MoveCommand::new(square, straight));
-            dr += 1;
-            df += 1;
+            r += dr;
+            f += df;
         }
     }
 

@@ -25,7 +25,7 @@ impl Board {
         let black_pawns = [Some(Piece::new(PieceType::Pawn, Color::Black)); 8];
         let white_pawns = [Some(Piece::new(PieceType::Pawn, Color::White)); 8];
 
-        let pieces_arr = [white_pieces, white_pawns, [None; 8], [None; 8], [None; 8], [None; 8], black_pieces, black_pawns];
+        let pieces_arr = [white_pieces, white_pawns, [None; 8], [None; 8], [None; 8], [None; 8], black_pawns, black_pieces];
 
     
         Board {board: pieces_arr}
@@ -65,10 +65,10 @@ impl std::fmt::Display for Board {
             for op in r {
                 match op {
                     Some(piece) => { board_str += &format!(" {} ", piece);},
-                    None =>  {board_str += &format!(" __ "); },
+                    None =>  {board_str += &format!(" -- "); },
                 }
             }
-            board_str.push_str("\n")
+            board_str.push_str("\n\n")
         }
         write!(f, "{}", board_str)
     }
