@@ -71,7 +71,6 @@ impl Game {
 mod test{
 
     use super::*;
-    use crate::types::coordinate::Square;
 
     // #[test]
     // fn new_game_test() {
